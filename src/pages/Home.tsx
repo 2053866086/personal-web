@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { 
@@ -12,11 +12,44 @@ import {
   Camera, 
   Figma,
   ArrowRight,
-  Mail
+  Mail,
+  CheckCircle,
+  Loader2
 } from 'lucide-react';
 import { worksData } from '../data/works';
 
 export default function Home() {
+  const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setFormStatus('sending');
+
+    const form = e.currentTarget;
+    const formData = new FormData(form);
+    formData.append('form-name', 'contact');
+
+    try {
+      const response = await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(formData as any).toString(),
+      });
+
+      if (response.ok) {
+        setFormStatus('success');
+        form.reset();
+        setTimeout(() => setFormStatus('idle'), 5000);
+      } else {
+        setFormStatus('error');
+        setTimeout(() => setFormStatus('idle'), 4000);
+      }
+    } catch {
+      setFormStatus('error');
+      setTimeout(() => setFormStatus('idle'), 4000);
+    }
+  };
+
   return (
     <main className="pt-32 pb-24 px-6 max-w-7xl mx-auto space-y-32 relative z-10">
       {/* Hero Section */}
@@ -287,11 +320,15 @@ export default function Home() {
           </div>
 
           <div className="glass-card p-8 rounded-3xl">
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form name="contact" method="POST" className="space-y-6" onSubmit={handleSubmit}>
+              <input type="hidden" name="form-name" value="contact" />
+              <p className="hidden"><label>Don't fill this out: <input name="bot-field" /></label></p>
               <div className="space-y-2">
                 <label className="text-sm font-medium text-on-surface/70">您的称呼</label>
                 <input 
-                  type="text" 
+                  type="text"
+                  name="name"
+                  required
                   placeholder="John Doe"
                   className="w-full bg-surface-container-high border border-white/5 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                 />
@@ -299,7 +336,9 @@ export default function Home() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-on-surface/70">电子邮箱</label>
                 <input 
-                  type="email" 
+                  type="email"
+                  name="email"
+                  required
                   placeholder="john@example.com"
                   className="w-full bg-surface-container-high border border-white/5 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all"
                 />
@@ -307,14 +346,42 @@ export default function Home() {
               <div className="space-y-2">
                 <label className="text-sm font-medium text-on-surface/70">项目简述</label>
                 <textarea 
+                  name="message"
                   rows={4}
+                  required
                   placeholder="请简要描述您的需求..."
                   className="w-full bg-surface-container-high border border-white/5 rounded-xl px-4 py-3 text-on-surface focus:outline-none focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all resize-none"
                 ></textarea>
               </div>
-              <button className="w-full py-4 bg-primary text-surface font-bold rounded-xl hover:bg-white transition-colors flex items-center justify-center space-x-2 group">
-                <span>发送信息</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+
+              {formStatus === 'success' && (
+                <div className="flex items-center space-x-2 text-green-400 bg-green-400/10 rounded-xl px-4 py-3">
+                  <CheckCircle className="w-5 h-5" />
+                  <span className="text-sm font-medium">信息已发送成功！我会尽快回复您。</span>
+                </div>
+              )}
+              {formStatus === 'error' && (
+                <div className="text-red-400 bg-red-400/10 rounded-xl px-4 py-3 text-sm font-medium">
+                  发送失败，请稍后再试或直接发送邮件。
+                </div>
+              )}
+
+              <button 
+                type="submit"
+                disabled={formStatus === 'sending'}
+                className="w-full py-4 bg-primary text-surface font-bold rounded-xl hover:bg-white transition-colors flex items-center justify-center space-x-2 group disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {formStatus === 'sending' ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>发送中...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>发送信息</span>
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </button>
             </form>
           </div>
