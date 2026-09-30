@@ -21,6 +21,8 @@ export interface Work {
   details: string[];
   video?: WorkVideo;
   channel?: ShortsChannel;
+  ads?: AdVideo[];
+  variants?: VariantVideo[];
 }
 
 // YouTube Shorts：封面已下载到 public/images/shorts/，国内打不开 YouTube 时也能看到封面
@@ -46,6 +48,28 @@ export const shortEmbedUrl = (id: string) =>
 export const shortPageUrl = (id: string) => `https://www.youtube.com/shorts/${id}`;
 export const formatViews = (n: number) => (n >= 10000 ? `${(n / 10000).toFixed(1)}万` : `${n}`);
 
+// Meta 广告库里的投放素材：视频和封面已下载到 public/，不依赖会过期的 Facebook 链接
+export interface AdVideo {
+  id: string; // Meta 广告库编号
+  game: string;
+  label: string; // 素材形式
+  duration: number; // 秒
+}
+
+export const adVideoUrl = (id: string) => `/videos/ad-${id}.mp4`;
+export const adPoster = (id: string, width: 400 | 720) => `/images/ads/ad-${id}-${width}.webp`;
+export const adLibraryUrl = (id: string) => `https://www.facebook.com/ads/library/?id=${id}`;
+
+// AI 批量变体：5 个竖屏版本横向拼成一条宽视频（原片 5400×1920）
+export interface VariantVideo {
+  id: string; // 文件名
+  title: string;
+  desc: string;
+}
+
+export const variantVideoUrl = (id: string) => `/videos/${id}.mp4`;
+export const variantPoster = (id: string) => `/images/ads/${id}-1600.webp`;
+
 export const bilibiliEmbedUrl = (v: WorkVideo) => {
   const params = new URLSearchParams({
     isOutside: 'true',
@@ -62,12 +86,27 @@ export const bilibiliEmbedUrl = (v: WorkVideo) => {
 export const bilibiliPageUrl = (v: WorkVideo) => `https://www.bilibili.com/video/${v.bvid}`;
 export const formatDuration = (s: number) => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 
+// 首页作品卡片左下角的视频标记，没有视频的作品返回 null
+export const mediaBadge = (w: Work) =>
+  w.video ? formatDuration(w.video.duration)
+  : w.channel ? `${w.channel.shorts.length} 条短视频`
+  : w.ads || w.variants ? `${(w.ads?.length ?? 0) + (w.variants?.length ?? 0)} 条广告视频`
+  : null;
+
 export const worksData: Work[] = [
   {
     id: "overseas-growth",
     title: "海外增长视频矩阵",
     category: "AI + 视频制作",
     image: "overseas-growth",
+    ads: [
+      { id: "1568222471608551", game: "Pawdoku", label: "玩法演示", duration: 55 },
+      { id: "2991335444549082", game: "Pawdoku", label: "街头实景", duration: 48 },
+    ],
+    variants: [
+      { id: "variant-ai-scenes", title: "AI 场景替换", desc: "同一段玩法，用 AI 换成 5 个不同的拍摄场景" },
+      { id: "variant-ai-faceswap", title: "AI 真人换脸", desc: "同一段口播，用 AI 换成 5 位不同的出镜人" },
+    ],
     tags: ["Stable Diffusion", "After Effects", "Figma"],
     description: "为 Pawdoku、Mahjong Master、Tile Home、Arrows 等休闲益智手游制作海外买量视频广告。结合 Stable Diffusion 与 After Effects，搭建起一套可批量产出的广告素材矩阵，大幅提升了素材产出效率，并有效提高了目标市场的用户转化率。",
     details: [

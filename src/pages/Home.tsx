@@ -18,7 +18,7 @@ import {
   Loader2,
   Play
 } from 'lucide-react';
-import { worksData, workImage, workImageSrcSet, formatDuration } from '../data/works';
+import { worksData, workImage, workImageSrcSet, mediaBadge } from '../data/works';
 
 // 统一的入场动画：轻微上浮 + 淡入，Apple 常用的弹性缓动
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -252,10 +252,10 @@ export default function Home() {
                     <ArrowUpRight className="w-4 h-4" />
                   </span>
                   {/* 有视频的作品显示时长，提示可以播放 */}
-                  {(work.video || work.channel) && (
+                  {mediaBadge(work) && (
                     <span className="glass glass-strong absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full pl-2 pr-3 py-1 text-[12px] font-medium text-white/90 tabular-nums">
                       <Play className="w-3 h-3 fill-white" />
-                      {work.video ? formatDuration(work.video.duration) : `${work.channel!.shorts.length} 条短视频`}
+                      {mediaBadge(work)}
                     </span>
                   )}
                 </div>

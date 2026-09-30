@@ -1,93 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'motion/react';
-import { ArrowUpRight, Play, X } from 'lucide-react';
+import React, { useCallback, useState } from 'react';
+import { AnimatePresence } from 'motion/react';
+import { ArrowUpRight, Play } from 'lucide-react';
+import VerticalLightbox from './VerticalLightbox';
 import { ShortsChannel, Short, shortThumb, shortEmbedUrl, shortPageUrl, formatViews } from '../data/works';
-
-const EASE = [0.22, 1, 0.36, 1] as const;
-
-// 竖屏短视频弹窗：点击封面后才加载 YouTube 播放器
-function ShortLightbox({ short, onClose }: { short: Short; onClose: () => void }) {
-  const closeRef = useRef<HTMLButtonElement>(null);
-
-  useEffect(() => {
-    const prevFocus = document.activeElement as HTMLElement | null;
-    const prevOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
-    closeRef.current?.focus();
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
-    };
-    window.addEventListener('keydown', onKey);
-    return () => {
-      window.removeEventListener('keydown', onKey);
-      document.body.style.overflow = prevOverflow;
-      prevFocus?.focus();
-    };
-  }, [onClose]);
-
-  return createPortal(
-    <motion.div
-      role="dialog"
-      aria-modal="true"
-      aria-label={short.title}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.3 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4"
-    >
-      <button
-        type="button"
-        aria-label="关闭"
-        tabIndex={-1}
-        onClick={onClose}
-        className="absolute inset-0 bg-black/70 backdrop-blur-xl cursor-default"
-      />
-      <motion.div
-        initial={{ opacity: 0, scale: 0.92, y: 20 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        exit={{ opacity: 0, scale: 0.95, y: 10 }}
-        transition={{ duration: 0.5, ease: EASE }}
-        className="relative flex flex-col items-center gap-4"
-      >
-        {/* 宽度按 9:16 由可用高度推出来，手机上也不会超出屏幕 */}
-        <div className="glass rounded-[2rem] p-2 w-[min(calc(100vw-2rem),calc((100dvh-9rem)*9/16),420px)]">
-          <div className="relative aspect-[9/16] rounded-[1.6rem] overflow-hidden bg-black">
-            <iframe
-              src={shortEmbedUrl(short.id)}
-              title={short.title}
-              className="absolute inset-0 w-full h-full"
-              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-              allowFullScreen
-            />
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
-          <a
-            href={shortPageUrl(short.id)}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass glass-strong inline-flex items-center gap-1.5 h-10 px-4 rounded-full text-[13px] font-medium text-white/80 hover:text-white transition-colors"
-          >
-            在 YouTube 打开
-            <ArrowUpRight className="w-3.5 h-3.5" />
-          </a>
-          <button
-            ref={closeRef}
-            type="button"
-            onClick={onClose}
-            aria-label="关闭"
-            className="glass glass-strong w-10 h-10 rounded-full flex items-center justify-center text-white/80 hover:text-white active:scale-90 transition-transform"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-      </motion.div>
-    </motion.div>,
-    document.body
-  );
-}
 
 export default function ShortsShowcase({ channel }: { channel: ShortsChannel }) {
   const [active, setActive] = useState<Short | null>(null);
@@ -167,7 +82,23 @@ export default function ShortsShowcase({ channel }: { channel: ShortsChannel }) 
       <p className="text-[12px] text-white/35 px-1">视频托管在 YouTube，中国大陆地区需要能访问 YouTube 才能播放。</p>
 
       <AnimatePresence>
-        {active && <ShortLightbox key={active.id} short={active} onClose={close} />}
+        {active && (
+          <VerticalLightbox
+            key={active.id}
+            title={active.title}
+            onClose={close}
+            externalUrl={shortPageUrl(active.id)}
+            externalLabel="在 YouTube 打开"
+          >
+            <iframe
+              src={shortEmbedUrl(active.id)}
+              title={active.title}
+              className="absolute inset-0 w-full h-full"
+              allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+              allowFullScreen
+            />
+          </VerticalLightbox>
+        )}
       </AnimatePresence>
     </section>
   );
