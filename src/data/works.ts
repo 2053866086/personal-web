@@ -1,9 +1,14 @@
+// 图片放在 public/images/，每张有 800w 和 1600w 两个 WebP 尺寸
+export const workImage = (name: string, width: 800 | 1600) => `/images/${name}-${width}.webp`;
+export const workImageSrcSet = (name: string) =>
+  `${workImage(name, 800)} 800w, ${workImage(name, 1600)} 1600w`;
+
 export const worksData = [
   {
     id: "overseas-growth",
     title: "海外增长视频矩阵",
     category: "AI + 视频制作",
-    image: "/海外游戏买量视频矩阵_四宫格_休闲益智游戏_英文.jpeg",
+    image: "overseas-growth",
     tags: ["Stable Diffusion", "After Effects", "Figma"],
     description: "通过结合 Stable Diffusion 和 After Effects，我们为海外市场构建了一套高效的视频内容生成矩阵。该项目大幅提升了内容产出效率，并显著提高了目标市场的用户转化率。",
     details: [
@@ -16,7 +21,7 @@ export const worksData = [
     id: "ip-building",
     title: "百万级新媒体IP打造",
     category: "内容策划与视觉",
-    image: "/美国经纪人.jpeg", 
+    image: "ip-building",
     tags: ["内容运营", "视觉设计", "数据分析"],
     description: "从零到一打造具有高辨识度的新媒体 IP。通过精准的用户画像分析和独特的视觉风格定位，成功吸引了超过 10 万核心粉丝，并产出多个百万级播放量的爆款内容。",
     details: [
@@ -29,7 +34,7 @@ export const worksData = [
     id: "ue5-environment",
     title: "虚幻5CG制作",
     category: "3D CG 动画",
-    image: "/虚幻引擎场景_8k_史诗中世纪魔法骑士_古堡对决.jpeg",
+    image: "ue5-environment",
     tags: ["Unreal Engine 5", "Sequencer", "Lumen", "镜头语言"],
     description: "基于 Unreal Engine 5 打造的高品质 CG 动画短片。涵盖了从资产搭建、材质灯光、镜头设计到最终渲染输出的完整 CG 制作流程，展现了史诗级的视觉效果。",
     details: [
@@ -42,7 +47,7 @@ export const worksData = [
     id: "brand-visual",
     title: "AI漫剧全流程",
     category: "分镜设计",
-    image: "/ai漫剧的封面_典型漫画男主_后面有几个美女_后景有几个怪物俯视的感觉_不要太俗气.jpeg",
+    image: "ai-comic",
     tags: ["Midjourney", "Stable Diffusion", "后期剪辑"],
     description: "主导并完成了AI漫剧的全流程制作。从剧本拆解、分镜设计，到利用AI绘画工具进行画面生成，最后进行后期剪辑与配音，打造出高质量的动态漫剧作品。",
     details: [
