@@ -5,18 +5,23 @@ import { ArrowUpRight, X } from 'lucide-react';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-// 竖屏视频弹窗，Shorts 和广告共用。放在 AnimatePresence 里才有退出动画。
-export default function VerticalLightbox({
+// 视频 / 截图弹窗，Shorts、广告、插件截图共用。放在 AnimatePresence 里才有退出动画。
+// aspect 是宽高比（默认竖屏 9:16），maxWidth 是弹窗最大宽度。
+export default function Lightbox({
   title,
   onClose,
   externalUrl,
   externalLabel,
+  aspect = 9 / 16,
+  maxWidth = 420,
   children,
 }: {
   title: string;
   onClose: () => void;
   externalUrl?: string;
   externalLabel?: string;
+  aspect?: number;
+  maxWidth?: number;
   children: React.ReactNode;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
@@ -62,9 +67,12 @@ export default function VerticalLightbox({
         transition={{ duration: 0.5, ease: EASE }}
         className="relative flex flex-col items-center gap-4"
       >
-        {/* 宽度按 9:16 由可用高度推出来，手机上也不会超出屏幕 */}
-        <div className="glass rounded-[2rem] p-2 w-[min(calc(100vw-2rem),calc((100dvh-9rem)*9/16),420px)]">
-          <div className="relative aspect-[9/16] rounded-[1.6rem] overflow-hidden bg-black">
+        {/* 宽度按宽高比由可用高度推出来，手机上也不会超出屏幕 */}
+        <div
+          className="glass rounded-[2rem] p-2"
+          style={{ width: `min(calc(100vw - 2rem), calc((100dvh - 9rem) * ${aspect}), ${maxWidth}px)` }}
+        >
+          <div className="relative rounded-[1.6rem] overflow-hidden bg-black" style={{ aspectRatio: aspect }}>
             {children}
           </div>
         </div>

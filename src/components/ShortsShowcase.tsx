@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { ArrowUpRight, Play } from 'lucide-react';
-import VerticalLightbox from './VerticalLightbox';
+import Lightbox from './Lightbox';
 import { ShortsChannel, Short, shortThumb, shortEmbedUrl, shortPageUrl, formatViews } from '../data/works';
 
 export default function ShortsShowcase({ channel }: { channel: ShortsChannel }) {
@@ -83,7 +83,7 @@ export default function ShortsShowcase({ channel }: { channel: ShortsChannel }) 
 
       <AnimatePresence>
         {active && (
-          <VerticalLightbox
+          <Lightbox
             key={active.id}
             title={active.title}
             onClose={close}
@@ -97,7 +97,7 @@ export default function ShortsShowcase({ channel }: { channel: ShortsChannel }) 
               allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
               allowFullScreen
             />
-          </VerticalLightbox>
+          </Lightbox>
         )}
       </AnimatePresence>
     </section>

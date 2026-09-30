@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import { AnimatePresence } from 'motion/react';
 import { Play } from 'lucide-react';
-import VerticalLightbox from './VerticalLightbox';
+import Lightbox from './Lightbox';
 import { AdVideo, adVideoUrl, adPoster, adLibraryUrl, formatDuration } from '../data/works';
 
 // 投放过的广告素材。视频文件放在网站里，国内也能直接播放。
@@ -56,7 +56,7 @@ export default function AdShowcase({ ads }: { ads: AdVideo[] }) {
 
       <AnimatePresence>
         {active && (
-          <VerticalLightbox
+          <Lightbox
             key={active.id}
             title={`${active.game} · ${active.label}`}
             onClose={close}
@@ -71,7 +71,7 @@ export default function AdShowcase({ ads }: { ads: AdVideo[] }) {
               autoPlay
               playsInline
             />
-          </VerticalLightbox>
+          </Lightbox>
         )}
       </AnimatePresence>
     </section>

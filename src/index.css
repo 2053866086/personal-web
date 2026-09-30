@@ -149,6 +149,18 @@ body {
       0 10px 24px -8px rgba(0, 0, 0, 0.6);
   }
 
+  /* 首屏以下的区块：滚动到附近才排版和绘制，不拖慢首页首次渲染。
+     高度是实测值，只在还没渲染时用来占位，渲染后浏览器会记住真实高度。 */
+  .defer-render {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 1500px;
+  }
+  @media (min-width: 768px) {
+    .defer-render {
+      contain-intrinsic-size: auto 890px;
+    }
+  }
+
   /* ---------- 背景极光 ---------- */
   .aurora {
     position: absolute;
