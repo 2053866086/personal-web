@@ -1,69 +1,236 @@
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700;800&family=Inter:wght@300;400;500;600&display=swap');
+/* 字体本地打包：Google Fonts 在国内经常加载失败/很慢 */
+@import "@fontsource-variable/inter";
 @import "tailwindcss";
 
 @theme {
-  --color-surface: #0c1324;
-  --color-on-surface: #dce1fb;
-  --color-primary: #c0c1ff;
-  --color-primary-dim: #a0a1df;
-  --color-surface-container: #191f31;
-  --color-surface-container-high: #23293c;
-  --color-surface-container-highest: #2e3447;
-  --color-outline: #45464d;
+  --color-ink: #07060c;
+  /* 主色：暗紫。violet 用于文字强调，violet-deep 用于背景光晕 */
+  --color-violet: #9d8cf0;
+  --color-violet-deep: #4a3591;
+  --color-apple-red: #ff453a;
+  --color-apple-green: #30d158;
 
-  --font-headline: "Manrope", sans-serif;
-  --font-body: "Inter", sans-serif;
+  /* Apple 设备直接用系统 SF Pro，其它平台回退 Inter */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter Variable", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --ease-spring: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
   scroll-behavior: smooth;
+  background-color: var(--color-ink);
+  color-scheme: dark;
 }
 
 body {
-  background-color: var(--color-surface);
-  color: var(--color-on-surface);
-  font-family: var(--font-body);
+  color: rgba(255, 255, 255, 0.92);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
-.glass-card {
-  background: rgba(25, 31, 49, 0.4);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-}
-
-.text-glow {
-  text-shadow: 0 0 30px rgba(192, 193, 255, 0.4);
-}
-
-.liquid-gradient {
-  background: radial-gradient(circle at 50% 100%, rgba(192, 193, 255, 0.15) 0%, transparent 60%);
-}
-
-.liquid-blob {
-  position: absolute;
-  filter: blur(80px);
-  z-index: -1;
-  opacity: 0.5;
-  animation: float 20s ease-in-out infinite alternate;
-}
-
-@keyframes float {
-  0% {
-    transform: translate(0, 0) scale(1);
+@layer components {
+  /* ---------- 玻璃材质 ---------- */
+  .glass {
+    --mx: 50%;
+    --my: 0%;
+    --spot: 0;
+    position: relative;
+    isolation: isolate;
+    background: linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.1) 0%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.02) 100%
+    );
+    backdrop-filter: blur(28px) saturate(170%);
+    -webkit-backdrop-filter: blur(28px) saturate(170%);
+    box-shadow:
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.1),
+      0 30px 60px -30px rgba(0, 0, 0, 0.7),
+      0 10px 20px -10px rgba(0, 0, 0, 0.35);
   }
-  33% {
-    transform: translate(30px, -50px) scale(1.1);
+
+  /* 玻璃边缘的高光：左上和右下更亮，像光线打在玻璃边上 */
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      160deg,
+      rgba(255, 255, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 25%,
+      rgba(255, 255, 255, 0.04) 50%,
+      rgba(255, 255, 255, 0.1) 75%,
+      rgba(255, 255, 255, 0.3) 100%
+    );
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
   }
-  66% {
-    transform: translate(-20px, 20px) scale(0.9);
+
+  /* 跟随鼠标的镜面反光，位置由 useGlassSpotlight 写入 --mx / --my */
+  .glass::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(
+      420px circle at var(--mx) var(--my),
+      rgba(255, 255, 255, 0.11),
+      transparent 45%
+    );
+    opacity: var(--spot);
+    transition: opacity 0.5s var(--ease-spring);
+    pointer-events: none;
   }
-  100% {
-    transform: translate(0, 0) scale(1);
+
+  /* 导航滚动后加深，保证压在图片上时文字依旧清楚 */
+  .glass-strong {
+    background: linear-gradient(145deg, rgba(38, 32, 60, 0.62), rgba(18, 15, 30, 0.55));
+    backdrop-filter: blur(40px) saturate(180%);
+    -webkit-backdrop-filter: blur(40px) saturate(180%);
+  }
+
+  /* 内凹的输入框 */
+  .field {
+    width: 100%;
+    border-radius: 1rem;
+    padding: 0.85rem 1rem;
+    color: rgba(255, 255, 255, 0.95);
+    background: rgba(0, 0, 0, 0.28);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.45),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+    transition: box-shadow 0.3s var(--ease-spring), background-color 0.3s;
+  }
+  .field::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+  }
+  .field:focus {
+    outline: none;
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow:
+      inset 0 1px 2px rgba(0, 0, 0, 0.45),
+      inset 0 0 0 1px rgba(157, 140, 240, 0.75),
+      0 0 0 4px rgba(157, 140, 240, 0.16);
+  }
+
+  /* 暗紫到淡紫的流光文字，一道高光缓慢扫过 */
+  .text-gradient {
+    background: linear-gradient(
+      100deg,
+      #7f6bd9 0%,
+      #e4dcff 20%,
+      #7f6bd9 40%,
+      #7f6bd9 60%,
+      #e4dcff 80%,
+      #7f6bd9 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shimmer 8s linear infinite;
+  }
+
+  /* 带一点紫色的玻璃图标底座 */
+  .icon-tile {
+    background: linear-gradient(145deg, rgba(157, 140, 240, 0.38), rgba(74, 53, 145, 0.14));
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.3),
+      inset 0 0 0 1px rgba(255, 255, 255, 0.12),
+      0 10px 24px -8px rgba(0, 0, 0, 0.6);
+  }
+
+  /* ---------- 背景极光 ---------- */
+  .aurora {
+    position: absolute;
+    width: 75vmax;
+    height: 75vmax;
+    border-radius: 50%;
+    will-change: transform;
+  }
+  .aurora-1 {
+    top: -30vmax;
+    left: -20vmax;
+    background: radial-gradient(circle, rgba(98, 68, 190, 0.34), transparent 62%);
+    animation: drift-1 28s ease-in-out infinite alternate;
+  }
+  .aurora-2 {
+    top: 5vmax;
+    right: -30vmax;
+    background: radial-gradient(circle, rgba(74, 53, 145, 0.36), transparent 62%);
+    animation: drift-2 34s ease-in-out infinite alternate;
+  }
+  .aurora-3 {
+    bottom: -40vmax;
+    left: 5vmax;
+    background: radial-gradient(circle, rgba(120, 60, 160, 0.2), transparent 62%);
+    animation: drift-3 40s ease-in-out infinite alternate;
+  }
+  .aurora-follow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 45vmax;
+    height: 45vmax;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(157, 140, 240, 0.12), transparent 62%);
+    opacity: 0;
+    transition: opacity 1.2s var(--ease-spring);
+    transform: translate3d(50vw, 30vh, 0) translate(-50%, -50%);
+    will-change: transform;
+  }
+  .grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    opacity: 0.045;
   }
 }
 
-.timeline-dot {
-  box-shadow: 0 0 10px rgba(192, 193, 255, 0.5);
+@keyframes shimmer {
+  to {
+    background-position: 200% center;
+  }
+}
+@keyframes drift-1 {
+  to {
+    transform: translate3d(18vw, 12vh, 0) scale(1.15);
+  }
+}
+@keyframes drift-2 {
+  to {
+    transform: translate3d(-15vw, 20vh, 0) scale(0.9);
+  }
+}
+@keyframes drift-3 {
+  to {
+    transform: translate3d(20vw, -15vh, 0) scale(1.1);
+  }
+}
+
+/* 不支持 backdrop-filter 的浏览器退回到不透明深色面板 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass,
+  .glass-strong {
+    background: rgba(24, 20, 38, 0.94);
+  }
+}
+
+/* 系统开启"减少动态效果"时关闭装饰动画 */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .aurora,
+  .text-gradient,
+  .animate-ping {
+    animation: none;
+  }
 }
