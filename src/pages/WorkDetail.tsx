@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowRight, ArrowUpRight, Check } from 'lucide-react';
 import { worksData, workImage, workImageSrcSet, bilibiliPageUrl } from '../data/works';
 import VideoEmbed from '../components/VideoEmbed';
 import ShortsShowcase from '../components/ShortsShowcase';
+import AdShowcase from '../components/AdShowcase';
+import VariantShowcase from '../components/VariantShowcase';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -137,6 +139,26 @@ export default function WorkDetail() {
           transition={{ duration: 1, ease: EASE, delay: 0.3 }}
         >
           <ShortsShowcase channel={work.channel} />
+        </motion.div>
+      )}
+
+      {work.ads && (
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: EASE, delay: 0.3 }}
+        >
+          <AdShowcase ads={work.ads} />
+        </motion.div>
+      )}
+
+      {work.variants && (
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: EASE, delay: 0.35 }}
+        >
+          <VariantShowcase variants={work.variants} />
         </motion.div>
       )}
 
