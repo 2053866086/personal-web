@@ -133,7 +133,7 @@ function Shell() {
           <div>&copy; {new Date().getFullYear()} Shane Xiao</div>
           <div className="flex items-center gap-6">
             <a href="mailto:qingshan0313@gmail.com" className="hover:text-white transition-colors">Email</a>
-            <a href="https://github.com/2053866086" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
+            <a href="https://github.com/qingshan0313-bot" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">GitHub</a>
           </div>
         </div>
       </footer>

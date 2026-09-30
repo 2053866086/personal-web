@@ -15,9 +15,10 @@ import {
   ArrowUpRight,
   Mail,
   CheckCircle,
-  Loader2
+  Loader2,
+  Play
 } from 'lucide-react';
-import { worksData, workImage, workImageSrcSet } from '../data/works';
+import { worksData, workImage, workImageSrcSet, formatDuration } from '../data/works';
 
 // 统一的入场动画：轻微上浮 + 淡入，Apple 常用的弹性缓动
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -250,6 +251,13 @@ export default function Home() {
                   <span className="glass glass-strong absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500 ease-spring">
                     <ArrowUpRight className="w-4 h-4" />
                   </span>
+                  {/* 有视频的作品显示时长，提示可以播放 */}
+                  {(work.video || work.channel) && (
+                    <span className="glass glass-strong absolute bottom-3 left-3 inline-flex items-center gap-1.5 rounded-full pl-2 pr-3 py-1 text-[12px] font-medium text-white/90 tabular-nums">
+                      <Play className="w-3 h-3 fill-white" />
+                      {work.video ? formatDuration(work.video.duration) : `${work.channel!.shorts.length} 条短视频`}
+                    </span>
+                  )}
                 </div>
                 <div className="px-4 pt-5 pb-4 space-y-3">
                   <h3 className="text-[22px] font-semibold tracking-tight">{work.title}</h3>

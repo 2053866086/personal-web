@@ -1,8 +1,10 @@
 import React, { useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, ArrowRight, Check } from 'lucide-react';
-import { worksData, workImage, workImageSrcSet } from '../data/works';
+import { ArrowLeft, ArrowRight, ArrowUpRight, Check } from 'lucide-react';
+import { worksData, workImage, workImageSrcSet, bilibiliPageUrl } from '../data/works';
+import VideoEmbed from '../components/VideoEmbed';
+import ShortsShowcase from '../components/ShortsShowcase';
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
@@ -65,19 +67,39 @@ export default function WorkDetail() {
         initial={{ opacity: 0, y: 30, scale: 0.98 }}
         animate={{ opacity: 1, y: 0, scale: 1 }}
         transition={{ duration: 1.2, ease: EASE, delay: 0.1 }}
-        className="glass rounded-[2.5rem] p-2.5"
+        className="space-y-3"
       >
-        <div className="aspect-video rounded-[2rem] overflow-hidden">
-          <img
-            src={workImage(work.image, 1600)}
-            srcSet={workImageSrcSet(work.image)}
-            sizes="(min-width: 1024px) 1024px, 100vw"
-            width={1600}
-            height={900}
-            alt={work.title}
-            className="w-full h-full object-cover"
-          />
+        <div className="glass rounded-[2.5rem] p-2.5">
+          {work.video ? (
+            // 换作品时重置播放状态
+            <VideoEmbed key={work.id} video={work.video} image={work.image} title={work.title} />
+          ) : (
+            <div className="aspect-video rounded-[2rem] overflow-hidden">
+              <img
+                src={workImage(work.image, 1600)}
+                srcSet={workImageSrcSet(work.image)}
+                sizes="(min-width: 1024px) 1024px, 100vw"
+                width={1600}
+                height={900}
+                alt={work.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
         </div>
+        {work.video && (
+          <div className="flex justify-end px-2">
+            <a
+              href={bilibiliPageUrl(work.video)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-[13px] text-white/45 hover:text-white transition-colors"
+            >
+              在 B 站观看
+              <ArrowUpRight className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        )}
       </motion.div>
 
       <motion.div
@@ -107,6 +129,16 @@ export default function WorkDetail() {
           </ul>
         </section>
       </motion.div>
+
+      {work.channel && (
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, ease: EASE, delay: 0.3 }}
+        >
+          <ShortsShowcase channel={work.channel} />
+        </motion.div>
+      )}
 
       {/* 下一个作品 */}
       <Link
