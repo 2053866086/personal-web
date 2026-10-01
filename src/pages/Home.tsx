@@ -19,6 +19,8 @@ import {
   Play
 } from 'lucide-react';
 import { worksData, workImage, workImageSrcSet, mediaBadge } from '../data/works';
+import { toolsData } from '../data/tools';
+import ToolCard from '../components/ToolCard';
 
 // 统一的入场动画：轻微上浮 + 淡入，Apple 常用的弹性缓动
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -270,6 +272,21 @@ export default function Home() {
                   </div>
                 </div>
               </Link>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* AE Tools */}
+      {/* defer-render 会裁掉超出区块的部分，所以底部加 pb-24 给卡片阴影和入场动画留位置，
+          再把间距减回去（mb + pb = 原来的 space-y-32 / md:space-y-44） */}
+      <section id="tools" className="defer-render space-y-12 scroll-mt-28 pb-24 mb-8 md:mb-20">
+        <SectionHeader eyebrow="Tools" title="自研 AE 插件" />
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-7">
+          {toolsData.map((tool, i) => (
+            <motion.div key={tool.id} {...reveal(i * 0.08)} className="h-full">
+              <ToolCard tool={tool} />
             </motion.div>
           ))}
         </div>
